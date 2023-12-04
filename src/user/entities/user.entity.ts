@@ -9,13 +9,13 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ nullable: true })
+  @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column()
   phone: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "enum", enum: ROLES, default: ROLES.USER, nullable: false })
   role: ROLES;
 
   @CreateDateColumn()
