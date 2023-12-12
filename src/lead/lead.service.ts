@@ -17,7 +17,10 @@ export class LeadService {
   // Create Lead Endpoint
   async create(createLeadDto: CreateLeadDto, files: any): Promise<BaseResponseDto> {
     try {
-      const fileArray = files.map((file) => file.path);
+      let fileArray;
+      if (files){
+      fileArray = files.map((file) => file.path);
+    }
       createLeadDto.propertyImage = fileArray;
       const lead = await this.leadRepository.save(createLeadDto);
       return {
@@ -28,6 +31,31 @@ export class LeadService {
     } catch (error) {
       await this.errorHandlerService.HttpException(error);
     }
+  }
+
+  async update(id: number, createLeadDto: CreateLeadDto) {
+    try {
+      
+      const lead = await this.leadRepository.count({ where: { id: id } });
+
+      if(lead){
+        await this.leadRepository.update({id: id},{ preferences: createLeadDto.preferences , propertySaleTime: createLeadDto.propertySaleTime,propertyPurchaseTime: createLeadDto.propertyPurchaseTime})
+
+        return{
+          statusCode: HttpStatus.OK,
+          message: MESSAGE.USER_UPDATED_SUCCESS
+        }
+      }
+
+      return{
+        statusCode: HttpStatus.NOT_FOUND,
+        message: MESSAGE.LEAD_NOT_EXISTS
+      }
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
+    }
+
+
   }
 
 }

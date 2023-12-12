@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors, UploadedFiles, Put, Param } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { BaseResponseDto } from 'src/helper/base-response.dto';
@@ -27,6 +27,11 @@ export class LeadController {
   @ApiConsumes('multipart/form-data')
   async create(@Body() createLeadDto: CreateLeadDto, @UploadedFiles() files): Promise<BaseResponseDto> {
     return this.leadService.create(createLeadDto, files);
+  }
+
+  @Put('update/:id')
+  async update(@Param('id') id: string, @Body() createLeadDto: CreateLeadDto): Promise<BaseResponseDto> {
+    return await this.leadService.update(+id, createLeadDto);
   }
 
 }
