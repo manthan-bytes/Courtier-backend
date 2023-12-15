@@ -3,6 +3,7 @@ import { ApiTags } from "@nestjs/swagger";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { BaseResponseDto } from "src/helper/base-response.dto";
+import { SendEmailDto } from "./dto/send-email.dto";
 
 @Controller("user")
 @ApiTags("User")
@@ -22,5 +23,10 @@ export class UserController {
   @Put('update/:id')
   async update(@Param('id') id: string, @Body() createUserDto: CreateUserDto): Promise<BaseResponseDto> {
     return await this.userService.update(+id, createUserDto);
+  }
+
+  @Post('sendEmail')
+  async sendEmail(@Body() sendEmailDto: SendEmailDto): Promise<BaseResponseDto> {
+    return await this.userService.sendEmail(sendEmailDto);
   }
 }

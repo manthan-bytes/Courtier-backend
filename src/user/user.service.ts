@@ -1,18 +1,23 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Code, Repository } from "typeorm";
+import { Repository } from "typeorm";
+import * as ejs from 'ejs';
+import * as path from 'path';
 import { User } from "./entities/user.entity";
 import { BaseResponseDto } from "src/helper/base-response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ErrorHandlerService } from "src/utils/error-handler.service";
 import { MESSAGE } from "src/constant/message";
 import { ROLES } from "src/enum/roles.enum";
+import { EmailService } from "src/helper/email-helper.service";
+import { SendEmailDto } from "./dto/send-email.dto";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly errorHandlerService: ErrorHandlerService,
+    private readonly emailService: EmailService
   ) { }
 
   async create(createUserDto: CreateUserDto): Promise<BaseResponseDto> {
@@ -62,19 +67,18 @@ export class UserService {
 
   async update(id: number, createUserDto: CreateUserDto): Promise<BaseResponseDto> {
     try {
-      
       const user = await this.userRepository.count({ where: { id: id } });
 
-      if(user){
-        await this.userRepository.update({id: id},{ name: createUserDto.name, email: createUserDto.email,phone: createUserDto.phone})
+      if (user) {
+        await this.userRepository.update({ id: id }, { name: createUserDto.name, email: createUserDto.email, phone: createUserDto.phone })
 
-        return{
+        return {
           statusCode: HttpStatus.OK,
           message: MESSAGE.USER_UPDATED_SUCCESS
         }
       }
 
-      return{
+      return {
         statusCode: HttpStatus.NOT_FOUND,
         message: MESSAGE.USER_NOT_EXISTS
       }
@@ -84,4 +88,35 @@ export class UserService {
 
   }
 
+  async sendEmail(sendEmailDto: SendEmailDto): Promise<BaseResponseDto> {
+    try {
+      const { email } = sendEmailDto;
+      const user = await this.userRepository.findOne({ where: { email: email } });
+
+      if (!user) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: MESSAGE.USER_NOT_EXISTS
+        }
+      }
+      const ejsHtml = await ejs.renderFile(
+        path.join(process.cwd(), '/src/email-template/test.ejs'),
+        { email },
+        { async: true },
+      );
+      await this.emailService.sendEmail(
+        user.email,
+        "Test Email",
+        ejsHtml,
+      );
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.EMAIL_SENT_SUCCESS
+      }
+
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
+    }
+  }
 }
