@@ -11,11 +11,13 @@ import { MESSAGE } from "src/constant/message";
 import { ROLES } from "src/enum/roles.enum";
 import { EmailService } from "src/helper/email-helper.service";
 import { SendEmailDto } from "./dto/send-email.dto";
+import { Lead } from "src/lead/entities/lead.entity";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Lead) private readonly leadRepository: Repository<Lead>,
     private readonly errorHandlerService: ErrorHandlerService,
     private readonly emailService: EmailService
   ) { }
@@ -90,25 +92,43 @@ export class UserService {
 
   async sendEmail(sendEmailDto: SendEmailDto): Promise<BaseResponseDto> {
     try {
-      const { email } = sendEmailDto;
-      const user = await this.userRepository.findOne({ where: { email: email } });
+      const { email, type, leadId } = sendEmailDto;
+      const user = await this.userRepository.findOne({ where: { email: email }, });
 
       if (!user) {
         return {
           statusCode: HttpStatus.NOT_FOUND,
           message: MESSAGE.USER_NOT_EXISTS
-        }
+        };
       }
-      const ejsHtml = await ejs.renderFile(
-        path.join(process.cwd(), '/src/email-template/test.ejs'),
-        { email },
-        { async: true },
-      );
-      await this.emailService.sendEmail(
-        user.email,
-        "Test Email",
-        ejsHtml,
-      );
+
+      const leadDetails = await this.leadRepository.findOne({
+        where: { id: leadId },
+        relations: ['userId'],
+      });
+
+      if (!leadDetails) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: MESSAGE.LEAD_NOT_EXISTS,
+        };
+      }
+
+      let ejsHtml;
+      if (type === "buyer") {
+        ejsHtml = await ejs.renderFile(
+          path.join(process.cwd(), "/src/email-template/buyer-template.ejs"),
+          { data: user, leadDetails },
+          { async: true }
+        );
+      } else if (type === "seller") {
+        ejsHtml = await ejs.renderFile(
+          path.join(process.cwd(), "/src/email-template/seller-template.ejs"),
+          { data: user, leadDetails },
+          { async: true }
+        );
+      }
+      await this.emailService.sendEmail(user.email, "Lead Details", ejsHtml);
 
       return {
         statusCode: HttpStatus.OK,
