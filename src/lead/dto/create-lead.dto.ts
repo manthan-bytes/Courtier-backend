@@ -30,7 +30,7 @@ export class CreateLeadDto {
 
   @ApiProperty({ example: [{ city: 'Montreal', boroughs: 'Quebec' }] })
   @IsOptional()
-  location: JSON;
+  location: string;
 
   @ApiProperty({ example: 1 })
   @IsString()

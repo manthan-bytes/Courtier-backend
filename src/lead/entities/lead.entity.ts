@@ -30,8 +30,8 @@ export class Lead {
   @Column({ type: "json", nullable: true })
   preferences: JSON;
 
-  @Column({ type: "json", nullable: true })
-  location: JSON;
+  @Column({ nullable: true })
+  location: string
 
   @CreateDateColumn()
   createdAt: Date;

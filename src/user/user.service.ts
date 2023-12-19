@@ -114,6 +114,10 @@ export class UserService {
         };
       }
 
+      const location = JSON.parse(leadDetails.location);
+      const locationCity = location.map((item) => item.city);
+      leadDetails.location = locationCity;
+
       let ejsHtml;
       if (type === "buyer") {
         ejsHtml = await ejs.renderFile(
