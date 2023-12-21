@@ -19,8 +19,10 @@ export class LeadService {
   // Create Lead Endpoint
   async create(createLeadDto: CreateLeadDto, files: any): Promise<BaseResponseDto> {
     try {
-      const fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
-      createLeadDto.propertyImage = fileArray;
+      if (files) {
+        const fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
+        createLeadDto.propertyImage = fileArray;
+      }
       const lead = await this.leadRepository.save(createLeadDto);
       return {
         statusCode: HttpStatus.CREATED,
@@ -56,10 +58,14 @@ export class LeadService {
   }
 
   async updateImage(id: number, files: any): Promise<BaseResponseDto> {
+    debugger
     try {
-      const fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
+      let fileArray;
+      if (files && files.length > 0) {
+        fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
+      }
       const lead = await this.leadRepository.count({ where: { id: id } });
-      if (lead) {
+      if (lead && fileArray) {
         await this.leadRepository.update({ id: id }, { propertyImage: fileArray });
         return {
           statusCode: HttpStatus.OK,
