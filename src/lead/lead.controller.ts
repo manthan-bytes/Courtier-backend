@@ -15,14 +15,7 @@ export class LeadController {
    * @returns BaseResponseDto
    */
   @Post("create")
-  @UseInterceptors(FilesInterceptor('files', 10, {
-    fileFilter: (req, file, cb) => {
-      if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-        cb(new Error('Only image files are allowed!'), false);
-      }
-      cb(null, true);
-    }
-  }))
+  @UseInterceptors(FilesInterceptor('files', 10))
   @ApiConsumes('multipart/form-data')
   async create(@Body() createLeadDto: CreateLeadDto, @UploadedFiles() files): Promise<BaseResponseDto> {
     return this.leadService.create(createLeadDto, files);
@@ -34,14 +27,7 @@ export class LeadController {
   }
 
   @Put('updateImage/:id')
-  @UseInterceptors(FilesInterceptor('files', 10, {
-    fileFilter: (req, file, cb) => {
-      if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-        cb(new Error('Only image files are allowed!'), false);
-      }
-      cb(null, true);
-    }
-  }))
+  @UseInterceptors(FilesInterceptor('files', 10))
   @ApiConsumes('multipart/form-data')
   async updateImage(@Param('id') id: string, @UploadedFiles() files): Promise<BaseResponseDto> {
     return await this.leadService.updateImage(+id, files);

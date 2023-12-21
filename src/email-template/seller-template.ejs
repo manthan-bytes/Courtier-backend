@@ -40,7 +40,7 @@
                                                             <tr>
                                                                <td
                                                                   style="padding-left:32px;padding-bottom:24px;padding-top:24px">
-                                                                  <a href="#" alt="One Home Solution"
+                                                                  <a href="#" alt="Courtier"
                                                                      style="font-family: 'Poppins', sans-serif;font-size:16px;color:#205081;text-decoration:none"
                                                                      target="_blank">
                                                                      <table cellpadding="0" cellspacing="0" width="100%"
@@ -361,70 +361,19 @@
                                                                                     <tr>
                                                                                        <td
                                                                                           style="padding-bottom:5px;font-size:0;vertical-align:middle">
-                                                                                          <div
-                                                                                             style="vertical-align:top;width: 100%;max-width:120px;padding-right: 5px; display:inline-block">
-                                                                                             <table border="0"
-                                                                                                cellspacing="0"
-                                                                                                cellpadding="0"
-                                                                                                style="width:100%">
-                                                                                                <tbody>
-                                                                                                   <tr>
-                                                                                                      <td align="left"
-                                                                                                         style="padding-bottom: 8px;">
-                                                                                                         <img style="width: 100%;" width="130" src="https://drive.google.com/file/d/1ErhJIU9PSyk2vQE2lyom8z6kJsfcIzqw/view?usp=sharing"
-                                                                                    title="Property Images" alt="Property Images"/></td>
-                                                                                                   </tr>
-                                                                                                </tbody>
-                                                                                             </table>
-                                                                                          </div>
-                                                                                          <div
-                                                                                             style="vertical-align:top;width: 100%;max-width:120px;padding-right: 5px;display:inline-block">
-                                                                                             <table border="0"
-                                                                                                cellspacing="0"
-                                                                                                cellpadding="0"
-                                                                                                style="width:100%">
-                                                                                                <tbody>
-                                                                                                   <tr>
-                                                                                                      <td align="left"
-                                                                                                         style="width: 100%;padding-bottom: 8px;">
-                                                                                                         <img style="width: 100%;" width="130" src="https://drive.google.com/file/d/1ErhJIU9PSyk2vQE2lyom8z6kJsfcIzqw/view?usp=sharing"
-                                                                                                         title="Property Images" alt="Property Images"/></td>
-                                                                                                   </tr>
-                                                                                                </tbody>
-                                                                                             </table>
-                                                                                          </div>
-                                                                                          <div
-                                                                                             style="vertical-align:top;width: 100%;max-width:120px;padding-right: 5px;display:inline-block">
-                                                                                             <table border="0"
-                                                                                                cellspacing="0"
-                                                                                                cellpadding="0"
-                                                                                                style="width:100%">
-                                                                                                <tbody>
-                                                                                                   <tr>
-                                                                                                      <td align="left"
-                                                                                                         style="width: 100%;padding-bottom: 8px;">
-                                                                                                         <img style="width: 100%;" width="130" src="https://drive.google.com/file/d/1ErhJIU9PSyk2vQE2lyom8z6kJsfcIzqw/view?usp=sharing"
-                                                                                                         title="Property Images" alt="Property Images"/></td>
-                                                                                                   </tr>
-                                                                                                </tbody>
-                                                                                             </table>
-                                                                                          </div>
-                                                                                          <div
-                                                                                          style="vertical-align:top;width: 100%;max-width:120px;padding-right: 5px;display:inline-block">
-                                                                                          <table border="0"
-                                                                                             cellspacing="0"
-                                                                                             cellpadding="0"
-                                                                                             style="width:100%">
-                                                                                             <tbody>
-                                                                                                <tr>
-                                                                                                   <td align="left"
-                                                                                                      style="padding-bottom: 8px; width: 100%;">
-                                                                                                      <img style="width: 100%;" width="130" src="https://drive.google.com/file/d/1ErhJIU9PSyk2vQE2lyom8z6kJsfcIzqw/view?usp=sharing"
-                                                                                                      title="Property Images" alt="Property Images"/></td>
-                                                                                                </tr>
-                                                                                             </tbody>
-                                                                                          </table>
-                                                                                       </div>
+                                                                                          <% for (let i = 0; i < Object.keys(leadDetails.propertyImage).length; i++) { %>
+                                                                                             <div style="vertical-align:top;width: 100%;max-width:120px;padding-right: 5px;display:inline-block">
+                                                                                                <table border="0" cellspacing="0" cellpadding="0" style="width:100%">
+                                                                                                   <tbody>
+                                                                                                      <tr>
+                                                                                                         <td align="left" style="width: 100%;padding-bottom: 8px;">
+                                                                                                            <img style="width: 100%;" width="130" src="<%= leadDetails.propertyImage[Object.keys(leadDetails.propertyImage)[i]] %>" title="Property Images" alt="Property Images"/>
+                                                                                                         </td>
+                                                                                                      </tr>
+                                                                                                   </tbody>
+                                                                                                </table>
+                                                                                             </div>
+                                                                                          <% } %>
                                                                                        </td>
                                                                                     </tr>
                                                                                  </tbody>
@@ -513,7 +462,7 @@
                                                                                                       <td align="left"
                                                                                                          style="padding-right:20px;font-family: 'Poppins', sans-serif;font-size:12px;line-height: 28px;font-weight: 500;color:#141414;text-align:left;">
                                                                                                          <a href="http://courtierxpert.com/"
-                                                                                                            alt="One Home Solution"
+                                                                                                            alt="Courtier"
                                                                                                             style="font-family: 'Poppins', sans-serif;font-size:12px;line-height: 28px;font-weight: 500;color:#141414;text-decoration:none"
                                                                                                             target="_blank">www.courtierxpert.com</a>
                                                                                                       </td>

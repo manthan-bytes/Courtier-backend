@@ -118,7 +118,6 @@ export class UserService {
       const locationCity = location.map((item) => item.city);
       const locationBoroughs = location.map((item) => item.boroughs);
       leadDetails['boroughs'] =  locationBoroughs;
-      console.log("🚀 ~ file: user.service.ts:121 ~ UserService ~ sendEmail ~ leadDetails:", leadDetails)
       leadDetails.location = locationCity;
 
 
