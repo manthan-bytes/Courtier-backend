@@ -34,4 +34,17 @@ export class LeadController {
     return await this.leadService.update(+id, createLeadDto);
   }
 
+  @Put('updateImage/:id')
+  @UseInterceptors(FilesInterceptor('files', 10, {
+    storage: diskStorage({
+      destination: './propertyImages',
+      filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+      },
+    }),
+  }))
+  @ApiConsumes('multipart/form-data')
+  async updateImage(@Param('id') id: string, @UploadedFiles() files): Promise<BaseResponseDto> {
+    return await this.leadService.updateImage(+id, files);
+  }
 }

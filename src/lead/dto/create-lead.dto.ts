@@ -42,5 +42,5 @@ export class CreateLeadDto {
   files?: any[];
 
   @IsOptional()
-  propertyImage: string[];
+  propertyImage: any[];
 }
