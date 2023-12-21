@@ -6,21 +6,20 @@ import { BaseResponseDto } from "src/helper/base-response.dto";
 import { CreateLeadDto } from "./dto/create-lead.dto";
 import { ErrorHandlerService } from "src/utils/error-handler.service";
 import { MESSAGE } from "src/constant/message";
+import { S3HelperService } from "src/helper/s3-helper.service";
 
 @Injectable()
 export class LeadService {
   constructor(
     @InjectRepository(Lead) private readonly leadRepository: Repository<Lead>,
     private readonly errorHandlerService: ErrorHandlerService,
+    private readonly s3HelperService: S3HelperService
   ) { }
 
   // Create Lead Endpoint
   async create(createLeadDto: CreateLeadDto, files: any): Promise<BaseResponseDto> {
     try {
-      let fileArray;
-      if (files) {
-        fileArray = files.map((file) => file.path);
-      }
+      const fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
       createLeadDto.propertyImage = fileArray;
       const lead = await this.leadRepository.save(createLeadDto);
       return {
@@ -58,10 +57,7 @@ export class LeadService {
 
   async updateImage(id: number, files: any): Promise<BaseResponseDto> {
     try {
-      let fileArray;
-      if (files) {
-        fileArray = files.map((file) => file.path);
-      }
+      const fileArray = await this.s3HelperService.uploadMultipleFiles(files, 'propertyImages');
       const lead = await this.leadRepository.count({ where: { id: id } });
       if (lead) {
         await this.leadRepository.update({ id: id }, { propertyImage: fileArray });

@@ -3,7 +3,6 @@ import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { BaseResponseDto } from 'src/helper/base-response.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { ApiConsumes } from '@nestjs/swagger';
 
 @Controller('lead')
@@ -17,12 +16,12 @@ export class LeadController {
    */
   @Post("create")
   @UseInterceptors(FilesInterceptor('files', 10, {
-    storage: diskStorage({
-      destination: './propertyImages',
-      filename: (req, file, cb) => {
-        cb(null, `${file.originalname}`);
-      },
-    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+        cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    }
   }))
   @ApiConsumes('multipart/form-data')
   async create(@Body() createLeadDto: CreateLeadDto, @UploadedFiles() files): Promise<BaseResponseDto> {
@@ -36,12 +35,12 @@ export class LeadController {
 
   @Put('updateImage/:id')
   @UseInterceptors(FilesInterceptor('files', 10, {
-    storage: diskStorage({
-      destination: './propertyImages',
-      filename: (req, file, cb) => {
-        cb(null, `${file.originalname}`);
-      },
-    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+        cb(new Error('Only image files are allowed!'), false);
+      }
+      cb(null, true);
+    }
   }))
   @ApiConsumes('multipart/form-data')
   async updateImage(@Param('id') id: string, @UploadedFiles() files): Promise<BaseResponseDto> {
