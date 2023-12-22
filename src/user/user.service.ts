@@ -115,12 +115,11 @@ export class UserService {
       }
 
       const location = JSON.parse(leadDetails.location);
-      const locationCity = location.map((item) => item.city);
-      const locationBoroughs = location.map((item) => item.boroughs);
-      leadDetails['boroughs'] =  locationBoroughs;
+      const locationCity = location ? location.map((item) => item.city): '';
+      const locationBoroughs = location ? location.map((item) => item.boroughs): '';
+
+      leadDetails['boroughs'] =  locationBoroughs || '';
       leadDetails.location = locationCity;
-
-
       let ejsHtml;
       if (type === "buyer") {
         ejsHtml = await ejs.renderFile(
