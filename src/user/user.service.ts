@@ -124,7 +124,7 @@ export class UserService {
       if (type === "buyer") {
         if (!leadDetails.preferences) {
           ejsHtml = await ejs.renderFile(
-            path.join(process.cwd(), "/src/email-template/buyer-template-without-preferance.ejs.ejs"),
+            path.join(process.cwd(), "/src/email-template/buyer-template-without-preferance.ejs"),
             { data: user, leadDetails },
             { async: true }
           );
