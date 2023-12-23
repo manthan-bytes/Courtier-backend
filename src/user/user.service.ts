@@ -122,17 +122,36 @@ export class UserService {
       leadDetails.location = locationCity;
       let ejsHtml;
       if (type === "buyer") {
-        ejsHtml = await ejs.renderFile(
-          path.join(process.cwd(), "/src/email-template/buyer-template.ejs"),
-          { data: user, leadDetails },
-          { async: true }
-        );
+        if (!leadDetails.preferences) {
+          ejsHtml = await ejs.renderFile(
+            path.join(process.cwd(), "/src/email-template/buyer-template-without-preferance.ejs.ejs"),
+            { data: user, leadDetails },
+            { async: true }
+          );
+        } else {
+          ejsHtml = await ejs.renderFile(
+            path.join(process.cwd(), "/src/email-template/buyer-template.ejs"),
+            { data: user, leadDetails },
+            { async: true }
+          );
+        }
+       
       } else if (type === "seller") {
-        ejsHtml = await ejs.renderFile(
-          path.join(process.cwd(), "/src/email-template/seller-template.ejs"),
-          { data: user, leadDetails },
-          { async: true }
-        );
+
+        if (!leadDetails.preferences) {
+          ejsHtml = await ejs.renderFile(
+            path.join(process.cwd(), "/src/email-template/seller-template-without-preferance.ejs"),
+            { data: user, leadDetails },
+            { async: true }
+          );
+        } else {
+          ejsHtml = await ejs.renderFile(
+            path.join(process.cwd(), "/src/email-template/seller-template.ejs"),
+            { data: user, leadDetails },
+            { async: true }
+          );
+        }
+       
       }
       await this.emailService.sendEmail(user.email, "Lead Details", ejsHtml);
 
