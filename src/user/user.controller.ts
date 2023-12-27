@@ -29,4 +29,9 @@ export class UserController {
   async sendEmail(@Body() sendEmailDto: SendEmailDto): Promise<BaseResponseDto> {
     return await this.userService.sendEmail(sendEmailDto);
   }
+
+  @Post('chatbot')
+  async chatbot(@Body() question: string): Promise<BaseResponseDto> {
+    return await this.userService.generateResponse(question);
+  }
 }
