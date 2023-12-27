@@ -167,8 +167,8 @@ export class UserService {
 
   async generateResponse(question: any): Promise<any> {
     try {
-      const apiUrl = 'https://api.openai.com/v1/chat/completions';
-      const apiKey = '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';
+      const apiUrl = process.env.CHATGPT_ENDPOINT;
+      const apiKey = process.env.CHATGPT_API_KEY;
 
       const realEstateContext = {
         generalInfo: `
