@@ -153,7 +153,7 @@ export class UserService {
         }
 
       }
-      await this.emailService.sendEmail(user.email, "Lead Details", ejsHtml);
+      await this.emailService.sendEmail(process.env.EMAIL_USER, "Lead Details", ejsHtml);
 
       return {
         statusCode: HttpStatus.OK,
