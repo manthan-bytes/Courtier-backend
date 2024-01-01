@@ -12,7 +12,6 @@ async function bootstrap() {
     .setTitle("Courtier example")
     .setDescription("The Courtier API description")
     .setVersion("1.0")
-    .addTag("Courtier")
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);

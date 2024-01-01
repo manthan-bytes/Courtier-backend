@@ -8,4 +8,18 @@ export const MESSAGE = {
   LEAD_UPDATED_SUCCESS: "Lead updated successfully.",
   LEAD_NOT_EXISTS: "Lead not exists.",
   EMAIL_SENT_SUCCESS: "Email sent successfully.",
+  PASSWORD_VALIDATION_FAILED:
+    "Password must contain at least one uppercase letter, one lowercase letter and one number.",
+  INVALID_CREDENTIALS: "Invalid credentials.",
+  LOGIN_SUCCESS: "Login successfully.",
+  FORGOT_PASSWORD_SENT: "Forgot password link sent successfully.",
+  PASSWORD_RESET_SUCCESS: "Password reset successfully.",
+  PASSWORD_RESET_LINK_EXPIRED: "Password reset link expired.",
+  USER_PASSWORD_UPDATED: "User password updated successfully.",
+  PASSWORD_SAME: "New password must be different from old password.",
+  USER_DELETED_SUCCESS: "User deleted successfully.",
+  LEAD_DELETED_SUCCESS: "Lead deleted successfully.",
+  LEAD_DETAIL_SUCCESS: "Lead detail get successfully.",
+  LEAD_LIST_SUCCESS: "Lead list get successfully.",
+  
 };

@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { LEAD_TYPE } from "src/enum/lead-type.enum";
 import { PROPERTY_TYPE } from "src/enum/property-type.enum";
-import { User } from "src/user/entities/user.entity";
+import { User } from "src/api/user/entities/user.entity";
 
 @Entity()
 export class Lead {

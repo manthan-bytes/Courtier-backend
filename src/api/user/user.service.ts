@@ -1,8 +1,9 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import * as ejs from 'ejs';
-import * as path from 'path';
+import * as ejs from "ejs";
+import * as path from "path";
+import axios from "axios";
 import { User } from "./entities/user.entity";
 import { BaseResponseDto } from "src/helper/base-response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -11,8 +12,10 @@ import { MESSAGE } from "src/constant/message";
 import { ROLES } from "src/enum/roles.enum";
 import { EmailService } from "src/helper/email-helper.service";
 import { SendEmailDto } from "./dto/send-email.dto";
-import { Lead } from "src/lead/entities/lead.entity";
-import axios from 'axios';
+import { Lead } from "../lead/entities/lead.entity";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { GetUserListDto } from "./dto/get-user-list.dto";
+
 @Injectable()
 export class UserService {
   constructor(
@@ -26,85 +29,96 @@ export class UserService {
     try {
       const userData = {
         ...createUserDto,
-        role: ROLES.USER
-      }
-      const userExists = await this.userRepository.findOne({ where: { email: userData.email } });
+        role: ROLES.USER,
+      };
+      const userExists = await this.userRepository.findOne({
+        where: { email: userData.email },
+      });
       if (userExists) {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
           message: MESSAGE.USER_ALREADY_EXISTS,
           data: null,
-        }
+        };
       }
       const user = await this.userRepository.save(userData);
       return {
         statusCode: HttpStatus.CREATED,
         message: MESSAGE.USER_CREATED_SUCCESS,
         data: user,
-      }
+      };
     } catch (error) {
       await this.errorHandlerService.HttpException(error);
     }
-
   }
 
   async getUserByEmail(email: string) {
-
     try {
-      const user = await this.userRepository.findOne({ where: { email: email } });
+      const user = await this.userRepository.findOne({
+        where: { email: email },
+      });
 
       if (user) {
         return {
           statusCode: HttpStatus.OK,
           message: MESSAGE.USER_GET_SUCCESS,
           data: user,
-        }
+        };
       }
     } catch (error) {
       await this.errorHandlerService.HttpException(error);
     }
-
-
   }
 
-  async update(id: number, createUserDto: CreateUserDto): Promise<BaseResponseDto> {
+  async update(
+    id: number,
+    createUserDto: CreateUserDto
+  ): Promise<BaseResponseDto> {
     try {
       const user = await this.userRepository.count({ where: { id: id } });
 
       if (user) {
-        await this.userRepository.update({ id: id }, { name: createUserDto.name, email: createUserDto.email, phone: createUserDto.phone })
+        await this.userRepository.update(
+          { id: id },
+          {
+            name: createUserDto.name,
+            email: createUserDto.email,
+            phone: createUserDto.phone,
+          }
+        );
 
         return {
           statusCode: HttpStatus.OK,
-          message: MESSAGE.USER_UPDATED_SUCCESS
-        }
+          message: MESSAGE.USER_UPDATED_SUCCESS,
+        };
       }
 
       return {
         statusCode: HttpStatus.NOT_FOUND,
-        message: MESSAGE.USER_NOT_EXISTS
-      }
+        message: MESSAGE.USER_NOT_EXISTS,
+      };
     } catch (error) {
       await this.errorHandlerService.HttpException(error);
     }
-
   }
 
   async sendEmail(sendEmailDto: SendEmailDto): Promise<BaseResponseDto> {
     try {
       const { email, type, leadId } = sendEmailDto;
-      const user = await this.userRepository.findOne({ where: { email: email }, });
+      const user = await this.userRepository.findOne({
+        where: { email: email },
+      });
 
       if (!user) {
         return {
           statusCode: HttpStatus.NOT_FOUND,
-          message: MESSAGE.USER_NOT_EXISTS
+          message: MESSAGE.USER_NOT_EXISTS,
         };
       }
 
       const leadDetails = await this.leadRepository.findOne({
         where: { id: leadId },
-        relations: ['userId'],
+        relations: ["userId"],
       });
 
       if (!leadDetails) {
@@ -115,11 +129,12 @@ export class UserService {
       }
 
       const location = JSON.parse(leadDetails.location);
-      const locationCity = location ? location.map((item) => item.city) : '';
-      const locationBoroughs = location ? location.map((item) => item.boroughs) : '';
-
-      leadDetails['boroughs'] = locationBoroughs || '';
+      const locationCity = location.map((item) => item.city);
+      const locationBoroughs = location.map((item) => item.boroughs);
+      leadDetails['boroughs'] = locationBoroughs;
       leadDetails.location = locationCity;
+
+
       let ejsHtml;
       if (type === "buyer") {
         if (!leadDetails.preferences) {
@@ -157,9 +172,8 @@ export class UserService {
 
       return {
         statusCode: HttpStatus.OK,
-        message: MESSAGE.EMAIL_SENT_SUCCESS
-      }
-
+        message: MESSAGE.EMAIL_SENT_SUCCESS,
+      };
     } catch (error) {
       await this.errorHandlerService.HttpException(error);
     }
@@ -249,6 +263,114 @@ export class UserService {
       console.error('Error asking question:', error.message);
       console.error('Error details:', error.response ? error.response.data : 'No response');
       return 'Error asking question';
+    }
+  }
+
+  async addUser(createUserDto: CreateUserDto): Promise<BaseResponseDto> {
+    try {
+      const userData = {
+        ...createUserDto,
+        role: ROLES.USER,
+      };
+      const userExists = await this.userRepository.findOne({
+        where: { email: userData.email },
+      });
+      if (userExists) {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: MESSAGE.USER_ALREADY_EXISTS,
+          data: null,
+        };
+      }
+      const user = await this.userRepository.save(userData);
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: MESSAGE.USER_CREATED_SUCCESS,
+        data: user,
+      };
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
+    }
+  }
+
+  async findAll(getUserListDto: GetUserListDto): Promise<BaseResponseDto> {
+    try {
+      const { page, limit } = getUserListDto;
+      const skip = page * limit - limit;
+      const [result, total] = await this.userRepository.findAndCount({
+        where: { role: ROLES.USER },
+        take: limit,
+        skip: skip,
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.USER_GET_SUCCESS,
+        data: {
+          result,
+          total,
+        },
+      };
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
+    }
+  }
+
+  async findOne(id: number): Promise<BaseResponseDto> {
+    try {
+      const user = await this.userRepository.findOneBy({ id });
+      if (!user) {
+        throw new HttpException(MESSAGE.USER_NOT_EXISTS, HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.USER_GET_SUCCESS,
+        data: user
+      };
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
+    }
+  }
+
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<BaseResponseDto> {
+    try {
+      const existsUser = await this.userRepository.findOneBy({ id });
+      if (!existsUser) {
+        throw new HttpException(MESSAGE.USER_NOT_EXISTS, HttpStatus.NOT_FOUND);
+      }
+
+      await this.userRepository.update(id, updateUserDto);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.USER_UPDATED_SUCCESS
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async remove(id: number): Promise<BaseResponseDto> {
+    try {
+      const existsUser = await this.userRepository.findOneBy({ id });
+      if (!existsUser) {
+        throw new HttpException(MESSAGE.USER_NOT_EXISTS, HttpStatus.NOT_FOUND);
+      }
+      await this.userRepository.delete(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.USER_DELETED_SUCCESS
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UserModule } from "./user/user.module";
-import { LeadModule } from './lead/lead.module';
+import { UserModule } from "./api/user/user.module";
+import { LeadModule } from "./api/lead/lead.module";
+import { AuthModule } from "./api/auth/auth.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LeadModule } from './lead/lead.module';
       }),
       inject: [ConfigService],
     }),
+    AuthModule,
     UserModule,
     LeadModule],
 })

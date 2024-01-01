@@ -12,11 +12,17 @@ export class User {
   @Column()
   name: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   phone: string;
 
+  @Column({ nullable: true })
+  password: string;
+
   @Column({ type: "enum", enum: ROLES, default: ROLES.USER, nullable: false })
-  role: ROLES;
+  role: string;
+
+  @Column({ nullable: true })
+  resetPasswordToken: string;
 
   @CreateDateColumn()
   createdAt: Date;
