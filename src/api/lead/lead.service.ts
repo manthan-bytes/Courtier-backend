@@ -91,8 +91,8 @@ export class LeadService {
 
       const [result, total] = await this.leadRepository.findAndCount({
         relations: ['userId'],
-        skip,
-        take,
+        // skip,
+        // take,
       });
       return {
         statusCode: HttpStatus.OK,
