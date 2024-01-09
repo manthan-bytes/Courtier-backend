@@ -10,6 +10,7 @@ import { BaseResponseDto } from "src/helper/base-response.dto";
 import { SendEmailDto } from "./dto/send-email.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserListDto } from "./dto/get-user-list.dto";
+import { ContactInfoDto } from "./dto/contact-info.dto";
 
 @Controller("user")
 @ApiTags("User")
@@ -79,5 +80,10 @@ export class UserController {
   @Roles(ROLES.ADMIN)
   async remove(@Param("id") id: number): Promise<BaseResponseDto> {
     return await this.userService.remove(id);
+  }
+
+  @Post("contactInfo")
+  async contactInfo(@Body() contactInfoDto: ContactInfoDto): Promise<BaseResponseDto> {
+    return await this.userService.contactInfo(contactInfoDto);
   }
 }

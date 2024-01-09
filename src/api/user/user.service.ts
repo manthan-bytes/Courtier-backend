@@ -15,6 +15,7 @@ import { SendEmailDto } from "./dto/send-email.dto";
 import { Lead } from "../lead/entities/lead.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { GetUserListDto } from "./dto/get-user-list.dto";
+import { ContactInfoDto } from "./dto/contact-info.dto";
 
 @Injectable()
 export class UserService {
@@ -371,6 +372,26 @@ export class UserService {
         error.message,
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
+    }
+  }
+
+  async contactInfo(contactInfoDto: ContactInfoDto): Promise<BaseResponseDto> {
+    try {
+
+      const ejsHtml = await ejs.renderFile(
+        path.join(process.cwd(), "/src/email-template/contact-info.ejs"),
+        { data: contactInfoDto },
+        { async: true }
+      );
+
+      await this.emailService.sendEmail(process.env.EMAIL_USER, "Contact Info", ejsHtml);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: MESSAGE.EMAIL_SENT_SUCCESS,
+      };
+    } catch (error) {
+      await this.errorHandlerService.HttpException(error);
     }
   }
 }
