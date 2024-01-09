@@ -186,9 +186,9 @@ export class UserService {
 
       const realEstateContext = {
         generalInfo: `
-            This ChatBot is specialized in responding to real-estate related questions in Quebec, Canada. Topics covered include purchasing homes, down payments, real-estate agent commissions, building inspections, and more. If a question falls outside these topics, the response will be: “I’m sorry, but I’m specifically trained on answering questions regarding real-estate.”
+            This ChatBot is specialized in responding to real-estate related questions for the region of Quebec, Canada. Topics covered is anything directly or indirectly related to real-estate activities in Quebec, Canada and courtierXpertInfo. If a question falls outside these topic types, the response will be: “I’m sorry, but I’m specifically trained on answering questions regarding real-estate. The faq information is provided for insipiration”
           `,
-        faq: {
+          faq : {
           "What legal disclosures must I make when selling a property in Quebec?":
             "Sellers in Quebec must disclose any known defects that could affect the value or enjoyment of the property, including latent defects not visible through a normal inspection.",
 
@@ -233,17 +233,18 @@ export class UserService {
           ]
         }
       };
+
       const realEstateContextMessages = Object.entries(realEstateContext).map(([key, value]) => ({
         role: "system",
         content: `${key}: ${JSON.stringify(value)}`
       }));
 
-      const assistant_context = `Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
+      const assistant_context = `RULES:use maximum of 75 words. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
 
       const response = await axios.post(apiUrl, {
         model: "gpt-4-1106-preview",
         temperature: 0.8,
-        max_tokens: 250,
+        max_tokens: 75,
         messages: [
           ...realEstateContextMessages,
           { role: "user", content: `${question?.question}\n\n${assistant_context}` }
