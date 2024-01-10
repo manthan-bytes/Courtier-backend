@@ -240,12 +240,12 @@ export class UserService {
         content: `${key}: ${JSON.stringify(value)}`
       }));
 
-      const assistant_context = `RULES:use maximum of 75 words. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
+      const assistant_context = `RULES:Use a maximum of 100 words for your response.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
 
       const response = await axios.post(apiUrl, {
         model: "gpt-4-1106-preview",
         temperature: 0.8,
-        max_tokens: 75,
+        max_tokens: 125,
         messages: [
           ...realEstateContextMessages,
           { role: "user", content: `${question?.question}\n\n${assistant_context}` }
