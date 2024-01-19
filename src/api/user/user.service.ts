@@ -241,12 +241,12 @@ export class UserService {
         content: `${key}: ${JSON.stringify(value)} . Please also consider the conversation history: ${this.conversation_history}`
       }));
 
-      const assistant_context = `RULES:Use a maximum of 95 words for your completed responses.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
+      const assistant_context = `RULES:Use a maximum of 150 words for your completed responses.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
       
       const response = await axios.post(apiUrl, {
         model: "gpt-4-1106-preview",
         temperature: 0.8,
-        max_tokens: 125,
+        max_tokens: 500,
         messages: [
           ...realEstateContextMessages,
           { role: "user", content: `${question?.question}\n\n${assistant_context}` }
@@ -260,10 +260,10 @@ export class UserService {
 
       // Log the entire response object for inspection
       const response_text = response.data.choices[0].message.content;
-      const formatted_response = this.formatResponse(response_text)
+      // const formatted_response = this.formatResponse(response_text)
       // Return the response or a specific property of the response
       this.conversation_history += `AI Response: ${response.data.choices[0].message.content} `;
-      return  formatted_response
+      return  response_text;
       // return response.data.choices[0].message.content;
     } catch (error) {
       console.error('Error asking question:', error.message);
