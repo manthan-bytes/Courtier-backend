@@ -19,6 +19,7 @@ import { ContactInfoDto } from "./dto/contact-info.dto";
 
 @Injectable()
 export class UserService {
+  conversation_history = "";
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Lead) private readonly leadRepository: Repository<Lead>,
@@ -184,7 +185,6 @@ export class UserService {
     try {
       const apiUrl = process.env.CHATGPT_ENDPOINT;
       const apiKey = process.env.CHATGPT_API_KEY;
-
       const realEstateContext = {
         generalInfo: `
             This ChatBot is specialized in responding to real-estate related questions for the region of Quebec, Canada. Topics covered is anything directly or indirectly related to real-estate activities in Quebec, Canada and courtierXpertInfo. If a question falls outside these topic types, the response will be: “I’m sorry, but I’m specifically trained on answering questions regarding real-estate. The faq information is provided for insipiration”
@@ -234,14 +234,15 @@ export class UserService {
           ]
         }
       };
+      this.conversation_history += `User Question: ${question?.question} `;
 
       const realEstateContextMessages = Object.entries(realEstateContext).map(([key, value]) => ({
         role: "system",
-        content: `${key}: ${JSON.stringify(value)}`
+        content: `${key}: ${JSON.stringify(value)} . Please also consider the conversation history: ${this.conversation_history}`
       }));
 
-      const assistant_context = `RULES:Use a maximum of 100 words for your response.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
-
+      const assistant_context = `RULES:Use a maximum of 95 words for your completed responses.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
+      
       const response = await axios.post(apiUrl, {
         model: "gpt-4-1106-preview",
         temperature: 0.8,
@@ -260,6 +261,7 @@ export class UserService {
       // Log the entire response object for inspection
 
       // Return the response or a specific property of the response
+      this.conversation_history += `AI Response: ${response.data.choices[0].message.content} `;
       return response.data.choices[0].message.content;
     } catch (error) {
       console.error('Error asking question:', error.message);
