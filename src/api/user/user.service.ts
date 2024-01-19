@@ -259,15 +259,31 @@ export class UserService {
       });
 
       // Log the entire response object for inspection
-
+      const response_text = response.data.choices[0].message.content;
+      const formatted_response = this.formatResponse(response_text)
       // Return the response or a specific property of the response
       this.conversation_history += `AI Response: ${response.data.choices[0].message.content} `;
-      return response.data.choices[0].message.content;
+      return  formatted_response
+      // return response.data.choices[0].message.content;
     } catch (error) {
       console.error('Error asking question:', error.message);
       console.error('Error details:', error.response ? error.response.data : 'No response');
       return 'Error asking question';
     }
+  }
+
+  formatResponse(text) {
+    // Split the text into lines
+    const lines = text.split('\n');
+  
+    const formattedLines = lines.map(line => {
+      // Replace markdown-style bold with HTML bold
+      line = line.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+      return line;
+    });
+  
+    // Join the lines back into a single string
+    return formattedLines.join('<br>');
   }
 
   async addUser(createUserDto: CreateUserDto): Promise<BaseResponseDto> {
