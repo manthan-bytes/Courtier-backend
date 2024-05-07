@@ -244,7 +244,7 @@ export class UserService {
       const assistant_context = `RULES:Use a maximum of 150 words for your completed responses.. Respond succinctly and in a friendly manner. Do not provide Links. Do no reference Sources. Just provide Authoritative information in a succinct and friendly manner.`
       
       const response = await axios.post(apiUrl, {
-        model: "gpt-4-1106-preview",
+        model: "gpt-4-turbo",
         temperature: 0.8,
         max_tokens: 500,
         messages: [
